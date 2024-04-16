@@ -36,3 +36,15 @@ jobs:
           push: true
           target: base
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+      - name: Delete Old Container
+        run: docker rm -f crowdFundingContainer
+      - name: Run docker container
+        run: docker run -d -p 3000:80 --name crowdFundingContainer ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+
+    
