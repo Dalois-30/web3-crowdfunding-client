@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 # Copying package.json and package-lock.json separately to leverage Docker caching
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci 
 
 # Copying the rest of the application
 COPY . .
