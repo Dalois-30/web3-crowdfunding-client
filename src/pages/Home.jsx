@@ -17,12 +17,12 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if(contract) fetchCampaigns();
+    if (contract) fetchCampaigns();
   }, [address, contract]);
 
   return (
-    <DisplayCampaigns 
-      title="All Campaigns"
+    <DisplayCampaigns
+      title="All Differents Campaigns"
       isLoading={isLoading}
       campaigns={campaigns}
     />
