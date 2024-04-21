@@ -49,6 +49,6 @@ jobs:
       - name: Delete Old Container
         run: docker rm -f crowdFundingContainer
       - name: Run docker container
-        run: docker run --name crowdFundingContainer -p 80:80 -d ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+        run: docker run --name crowdFundingContainer -p 3000:80 -d ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
 
     
