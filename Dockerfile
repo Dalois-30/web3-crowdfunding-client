@@ -1,29 +1,32 @@
-# syntax=docker/dockerfile:1
+# # # syntax=docker/dockerfile:1
 
-# ARG NODE_VERSION=18.15.0
-# FROM node:${NODE_VERSION}-alpine as base
-FROM node:18.15.0-alpine as base
-WORKDIR /usr/src/app
+# # # ARG NODE_VERSION=18.15.0
+# # # FROM node:${NODE_VERSION}-alpine as base
+FROM node:18.15.0-alpine as build
 
-# Copying package.json and package-lock.json separately to leverage Docker caching
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json into the working directory
 COPY package*.json ./
-RUN npm ci 
 
-# Copying the rest of the application
+# Install dependencies
+RUN npm install
+
+# Copy the entire application source code into the container
 COPY . .
 
-# Building the React application
+# Build the React application for production
 RUN npm run build
 
-# Stage 2 - Build the final image
+# Use Nginx as the production server
 FROM nginx:alpine
 
-RUN rm -rf *
+# Copy the built React application into the Nginx server directory
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copying the build files from the previous stage
-COPY --from=base /usr/src/app/dist /usr/share/nginx/html
-
-# Exposing port 80 for Nginx
+# Expose port 80 for the Nginx server
 EXPOSE 80
-ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
-# Nginx is configured to run automatically in the nginx:alpine image
+
+# Start Nginx when the container is run
+CMD ["nginx", "-g", "daemon off;"]
