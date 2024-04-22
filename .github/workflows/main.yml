@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - master
+      - terraform
 
 jobs:
   build:
@@ -35,20 +35,41 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+  # deploy:
+  #   needs: build
+  #   runs-on: self-hosted
+  #   steps:
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Pull image from docker hub
+  #       run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+  #     - name: Delete Old Container
+  #       run: docker rm -f crowdFundingContainer
+  #     - name: Run docker container
+  #       run: docker run --name crowdFundingContainer -p 3000:80 -d ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+   
     steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Pull image from docker hub
-        run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
-      - name: Delete Old Container
-        run: docker rm -f crowdFundingContainer
-      - name: Run docker container
-        run: docker run --name crowdFundingContainer -p 3000:80 -d ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
-
+      - name: Checkout repository
+        uses: actions/checkout@v2
     
+      - name: Terraform Init
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          TF_VAR_docker_image_name: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}
+          TF_VAR_docker_username: ${{ secrets.DOCKER_USERNAME }}
+          TF_VAR_docker_token: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+   
