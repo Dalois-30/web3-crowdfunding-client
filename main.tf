@@ -23,6 +23,7 @@ variable "region" {
 variable "docker_image_name" {
  description = "Your Docker name image"
  type        = string
+ default = "dalois30/web3-crowdfunding-client"
 }
 
 variable "docker_username" {
