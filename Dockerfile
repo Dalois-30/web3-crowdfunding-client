@@ -16,7 +16,7 @@ RUN npm install
 # Copy the entire application source code into the container
 COPY . .
 
-# Build the React application for production
+# Build the Angular application for production
 RUN npm run build
 
 # Use Nginx as the production server
@@ -24,6 +24,9 @@ FROM nginx:alpine
 
 # Copy the built React application into the Nginx server directory
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 for the Nginx server
 EXPOSE 80
