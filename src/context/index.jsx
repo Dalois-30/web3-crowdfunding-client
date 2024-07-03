@@ -52,7 +52,7 @@ export const StateContextProvider = ({ children }) => {
 
       console.log("contract call success", data)
     } catch (error) {
-      console.log("contract call failure", error)
+      console.log("contract call failure", error)  
     }
   }
 
