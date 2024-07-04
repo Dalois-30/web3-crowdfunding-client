@@ -1,0 +1,422 @@
+{
+    "abi": [
+        {
+            "type": "constructor",
+            "inputs": [
+                {
+                    "name": "_projectTax",
+                    "type": "uint8",
+                    "internalType": "uint8"
+                },
+                {
+                    "name": "_ethPriceFeed",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "acceptOwnership",
+            "inputs": [],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "backProject",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "payable"
+        },
+        {
+            "type": "function",
+            "name": "changeTax",
+            "inputs": [
+                {
+                    "name": "_taxPct",
+                    "type": "uint8",
+                    "internalType": "uint8"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "createProject",
+            "inputs": [
+                {
+                    "name": "title",
+                    "type": "string",
+                    "internalType": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string",
+                    "internalType": "string"
+                },
+                {
+                    "name": "imageURL",
+                    "type": "string",
+                    "internalType": "string"
+                },
+                {
+                    "name": "cost",
+                    "type": "uint256",
+                    "internalType": "uint256"
+                },
+                {
+                    "name": "expiresAt",
+                    "type": "uint256",
+                    "internalType": "uint256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "deleteProject",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "getAllProjects",
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[]",
+                    "internalType": "contract Project[]"
+                }
+            ],
+            "stateMutability": "view"
+        },
+        {
+            "type": "function",
+            "name": "getOwner",
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "stateMutability": "view"
+        },
+        {
+            "type": "function",
+            "name": "getProject",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address",
+                    "internalType": "contract Project"
+                }
+            ],
+            "stateMutability": "view"
+        },
+        {
+            "type": "function",
+            "name": "getProjectStats",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256[6]",
+                    "internalType": "uint256[6]"
+                }
+            ],
+            "stateMutability": "view"
+        },
+        {
+            "type": "function",
+            "name": "owner",
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "stateMutability": "view"
+        },
+        {
+            "type": "function",
+            "name": "payOutProject",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "requestRefund",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "transferOwnership",
+            "inputs": [
+                {
+                    "name": "to",
+                    "type": "address",
+                    "internalType": "address"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProject",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "title",
+                    "type": "string",
+                    "internalType": "string"
+                },
+                {
+                    "name": "description",
+                    "type": "string",
+                    "internalType": "string"
+                },
+                {
+                    "name": "imageURL",
+                    "type": "string",
+                    "internalType": "string"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProjectDescription",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "description",
+                    "type": "string",
+                    "internalType": "string"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProjectExpiration",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "expiresAt",
+                    "type": "uint256",
+                    "internalType": "uint256"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProjectImageURL",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "imageURL",
+                    "type": "string",
+                    "internalType": "string"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProjectTax",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "projectTax",
+                    "type": "uint256",
+                    "internalType": "uint256"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "function",
+            "name": "updateProjectTitle",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "internalType": "address"
+                },
+                {
+                    "name": "title",
+                    "type": "string",
+                    "internalType": "string"
+                }
+            ],
+            "outputs": [],
+            "stateMutability": "nonpayable"
+        },
+        {
+            "type": "event",
+            "name": "OwnershipTransferRequested",
+            "inputs": [
+                {
+                    "name": "from",
+                    "type": "address",
+                    "indexed": true,
+                    "internalType": "address"
+                },
+                {
+                    "name": "to",
+                    "type": "address",
+                    "indexed": true,
+                    "internalType": "address"
+                }
+            ],
+            "anonymous": false
+        },
+        {
+            "type": "event",
+            "name": "OwnershipTransferred",
+            "inputs": [
+                {
+                    "name": "from",
+                    "type": "address",
+                    "indexed": true,
+                    "internalType": "address"
+                },
+                {
+                    "name": "to",
+                    "type": "address",
+                    "indexed": true,
+                    "internalType": "address"
+                }
+            ],
+            "anonymous": false
+        },
+        {
+            "type": "event",
+            "name": "ProjectCreated",
+            "inputs": [
+                {
+                    "name": "projectAddress",
+                    "type": "address",
+                    "indexed": false,
+                    "internalType": "address"
+                },
+                {
+                    "name": "owner",
+                    "type": "address",
+                    "indexed": false,
+                    "internalType": "address"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "uint256",
+                    "indexed": false,
+                    "internalType": "uint256"
+                }
+            ],
+            "anonymous": false
+        },
+        {
+            "type": "error",
+            "name": "Manager__CostCannotBeZero",
+            "inputs": []
+        },
+        {
+            "type": "error",
+            "name": "Manager__DeadlineMustBeInTheFuture",
+            "inputs": []
+        },
+        {
+            "type": "error",
+            "name": "Manager__DescriptionCannotBeEmpty",
+            "inputs": []
+        },
+        {
+            "type": "error",
+            "name": "Manager__TitleCannotBeEmpty",
+            "inputs": []
+        }
+    ]
+}
