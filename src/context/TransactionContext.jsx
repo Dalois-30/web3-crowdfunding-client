@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ethers } from "ethers"
 
-import { crowdfundingAddress,tokenAddress, crowdABI, tokenABI } from '../../utils/constants';
+import { crowdfundingAddress,tokenAddress, crowdABI, tokenABI, projABI } from '../../utils/constants';
 // import { contractABI, contractAddress } from '../../utils/constants';
 
 export const TransactionContext = React.createContext();
@@ -21,6 +21,19 @@ const getEtherumContract = async () => {
     const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer)
 
     return {crowdfundingContract, tokenContract};
+}
+
+const getProjectContract = async (projAddress) => {
+    // create provider
+    const provider = new ethers.BrowserProvider(ethereum)
+
+    // get connected account
+    const signer = await provider.getSigner();
+
+    // create a new transaction contract
+    const contractContract = new ethers.Contract(projAddress, projABI, signer)
+
+    return contractContract;
 }
 
 
