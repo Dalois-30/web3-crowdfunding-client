@@ -8,7 +8,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
  const navigate = useNavigate();
 
  const handleNavigate = (campaign) => {
-    navigate(`/campaign-details/${campaign.title}`, { state: campaign })
+    navigate(`/campaign-details/${campaign.startTime}`, { state: campaign })
  }
   
  return (
@@ -27,7 +27,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
         )}
 
         {!isLoading && campaigns && campaigns.length > 0 && campaigns.map((campaign) => <FundCard 
-          key={campaign.id}
+          key={campaign.startTime}
           {...campaign}
           handleClick={() => handleNavigate(campaign)}
         />)}

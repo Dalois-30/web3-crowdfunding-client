@@ -1,10 +1,14 @@
 import React, { useContext, createContext, useState } from 'react';
 import { ethers } from 'ethers';
+
+import { crowdfundingAddress, tokenAddress, crowdABI, tokenABI, projABI } from '../utils/constants';
+
 const StateContext = createContext();
 
 const { ethereum } = window;
 
-const contract = async () => {
+
+const getEtherumContract = async () => {
   // create provider
   const provider = new ethers.BrowserProvider(ethereum)
 
@@ -12,9 +16,23 @@ const contract = async () => {
   const signer = await provider.getSigner();
 
   // create a new transaction contract
-  const transactionContract = new ethers.Contract(contractAddress, contractABI, signer)
+  const crowdfundingContract = new ethers.Contract(crowdfundingAddress, crowdABI, signer)
+  const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer)
 
-  return transactionContract;
+  return { crowdfundingContract, tokenContract };
+}
+
+const getProjectContract = async (projAddress) => {
+  // create provider
+  const provider = new ethers.BrowserProvider(ethereum)
+
+  // get connected account
+  const signer = await provider.getSigner();
+
+  // create a new transaction contract
+  const contractContract = new ethers.Contract(projAddress, projABI, signer)
+
+  return contractContract;
 }
 
 
@@ -31,13 +49,98 @@ export const StateContextProvider = ({ children }) => {
       if (!ethereum) {
         return alert("Please install Metamask")
       }
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+      const accounts = await ethereum.request({ method: "eth_accounts" });
       setAddress(accounts[0]);
+      const projects = await getAllProjects();
+      console.log("projects", projects);
     } catch (error) {
       console.log(error);
       throw new Error("No ethereum object.")
     }
   }
+
+
+  const getAllProjects = async () => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      setIsLoading(true);
+      const { crowdfundingContract } = await getEtherumContract();
+      console.log('ManagerContract', crowdfundingContract);
+
+      const projectAddresses = await crowdfundingContract.getAllProjects();
+      console.log('Project addresses:', projectAddresses);
+
+      const projectDetails = await Promise.all(
+        projectAddresses.map(async (address) => {
+          const details = await getProjectDetails(address);
+          return {
+            address,
+            ...details,
+          };
+        })
+      );
+
+      // setProjects(projectDetails);
+      setIsLoading(false);
+      console.log('Projects:', projectDetails);
+      return projectDetails;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      throw new Error('No ethereum object.');
+    }
+  };
+
+  const getProjectDetails = async (projAddress) => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      const projectContract = await getProjectContract(projAddress);
+      console.log('projectContractGet', projectContract);
+      const tx = await projectContract.getProjectDetails();
+      const adminAddress = await getAdminOwner(projAddress)
+      const projectDetails = {
+        title: tx[0],
+        description: tx[1],
+        imageUrl: tx[2],
+        targetAmount: parseInt(tx[3]),
+        amountRaised: parseInt(tx[4]),
+        startTime: parseInt(tx[5]),
+        endTime: parseInt(tx[6]),
+        isActive: tx[7],
+        tax: parseInt(tx[8]),
+        status: parseInt(tx[9]),
+        adminAddress: adminAddress
+      };
+      console.log('Project Detail Informations:', projectDetails);
+  
+      return projectDetails;
+    } catch (error) {
+      console.log(error);
+      throw new Error('No ethereum object.');
+    }
+  };
+
+  const getAdminOwner = async (projAddress) => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      const projectContract = await getProjectContract(projAddress);
+      const tx = await projectContract.getAdminOwner();
+      console.log('getAdminOwner', tx);
+  
+      return tx;
+    } catch (error) {
+      console.log(error);
+      throw new Error('No ethereum object.');
+    }
+  };
+  
+  
 
   const publishCampaign = async (form) => {
     try {
@@ -52,7 +155,7 @@ export const StateContextProvider = ({ children }) => {
 
       console.log("contract call success", data)
     } catch (error) {
-      console.log("contract call failure", error)  
+      console.log("contract call failure", error)
     }
   }
 
@@ -145,8 +248,12 @@ export const StateContextProvider = ({ children }) => {
     <StateContext.Provider
       value={{
         address,
-        contract,
+        // getAdminOwner,
+        getEtherumContract,
+        getProjectContract,
         connect,
+        getAllProjects,
+        getProjectDetails,
         createCampaign: publishCampaign,
         getCampaigns,
         getUserCampaigns,
