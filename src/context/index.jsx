@@ -113,7 +113,8 @@ export const StateContextProvider = ({ children }) => {
         isActive: tx[7],
         tax: parseInt(tx[8]),
         status: parseInt(tx[9]),
-        adminAddress: adminAddress
+        adminAddress: adminAddress,
+        projAddress: projAddress
       };
       console.log('Project Detail Informations:', projectDetails);
   
@@ -139,6 +140,35 @@ export const StateContextProvider = ({ children }) => {
       throw new Error('No ethereum object.');
     }
   };
+
+  
+  const donate = async (projAddress, amount) => {
+    try {
+      if (!ethereum) {
+        return alert("Please install Metamask");
+      }
+      const { crowdfundingContract } = await getEtherumContract();
+      const parsedAmount = ethers.parseEther(amount);
+      console.log(parsedAmount);
+
+      await ethereum.request({
+        method: "eth_sendTransaction",
+        params: [{
+          from: currentAccount,
+          to: crowdfundingAddress,
+          value: ethers.toBeHex(parsedAmount)
+        }]
+      })
+      const transaction = await crowdfundingContract.backProject(projAddress)
+      console.log(`Loading - ${transaction.hash}`);
+      await transaction.wait();
+      setIsLoading(false);
+      console.log("success", transaction);
+      return transaction
+    } catch (error) {
+
+    }
+  }
   
   
 
@@ -199,33 +229,6 @@ export const StateContextProvider = ({ children }) => {
     }
   }
 
-  const donate = async (pId, amount) => {
-    try {
-      if (!ethereum) {
-        return alert("Please install Metamask");
-      }
-      const transactionContract = await contract();
-      const parsedAmount = ethers.parseEther(amount);
-      console.log(parsedAmount);
-
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{
-          from: currentAccount,
-          to: transactionContract.address,
-          value: ethers.toBeHex(parsedAmount)
-        }]
-      })
-      const transaction = await transactionContract.donateToCampaign(pId)
-      console.log(`Loading - ${transaction.hash}`);
-      await transaction.wait();
-      setIsLoading(false);
-      console.log("success", transaction);
-      return transaction
-    } catch (error) {
-
-    }
-  }
 
   const getDonations = async (pId) => {
     const donations = await contract.call('getDonators', pId);
