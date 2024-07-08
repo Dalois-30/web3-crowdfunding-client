@@ -1,6 +1,5 @@
 export const daysLeft = (deadline) => {
   const difference = new Date(deadline).getTime() * 1000 - Date.now();
-  console.log("every difference", difference, new Date(deadline).getTime() * 1000, Date.now())
   if (difference <= 0) {
     return 'Expired';
   }

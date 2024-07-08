@@ -1,4 +1,5 @@
-import React, { useContext, createContext, useState } from 'react';
+import React, { useContext, useEffect, createContext, useState } from 'react';
+
 import { ethers } from 'ethers';
 
 import { crowdfundingAddress, tokenAddress, crowdABI, tokenABI, projABI } from '../utils/constants';
@@ -47,18 +48,42 @@ export const StateContextProvider = ({ children }) => {
   const connect = async () => {
     try {
       if (!ethereum) {
-        return alert("Please install Metamask")
+        return alert("Please install MetaMask");
       }
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-      setAddress(accounts[0]);
+
+      // Request access to the user's accounts
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      // The selected account is the first one in the array
+      const selectedAccount = accounts[0];
+      setAddress(selectedAccount);
+
+      // You might want to store this account or use it for future calls
+      console.log("Connected account:", selectedAccount);
+
       const projects = await getAllProjects();
       console.log("projects", projects);
+
+    } catch (error) {
+      console.error("Error connecting to MetaMask:", error);
+      throw new Error("No ethereum object or user rejected the request.");
+    }
+  };
+
+  const checkIfWalletIsConnected = async () => {
+    try {
+      if (!ethereum) return alert("Please install MetaMask.");
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length) {
+        setAddress(accounts[0]);
+        return accounts[0];
+      }
+      return false;
     } catch (error) {
       console.log(error);
-      throw new Error("No ethereum object.")
+      throw new Error("No ethereum object");
     }
-  }
-
+  };
 
   const getAllProjects = async () => {
     try {
@@ -117,7 +142,7 @@ export const StateContextProvider = ({ children }) => {
         projAddress: projAddress
       };
       console.log('Project Detail Informations:', projectDetails);
-  
+
       return projectDetails;
     } catch (error) {
       console.log(error);
@@ -133,7 +158,7 @@ export const StateContextProvider = ({ children }) => {
       const projectContract = await getProjectContract(projAddress);
       const tx = await projectContract.getAdminOwner();
       console.log('getAdminOwner', tx);
-  
+
       return tx;
     } catch (error) {
       console.log(error);
@@ -141,36 +166,34 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
-  
+
   const donate = async (projAddress, amount) => {
     try {
       if (!ethereum) {
         return alert("Please install Metamask");
       }
+      await checkIfWalletIsConnected();
       const { crowdfundingContract } = await getEtherumContract();
       const parsedAmount = ethers.parseEther(amount);
       console.log(parsedAmount);
 
-      await ethereum.request({
-        method: "eth_sendTransaction",
-        params: [{
-          from: currentAccount,
-          to: crowdfundingAddress,
-          value: ethers.toBeHex(parsedAmount)
-        }]
-      })
-      const transaction = await crowdfundingContract.backProject(projAddress)
+      const transaction = await crowdfundingContract.backProject(projAddress, {
+        value: parsedAmount
+      });
+
       console.log(`Loading - ${transaction.hash}`);
       await transaction.wait();
       setIsLoading(false);
       console.log("success", transaction);
-      return transaction
+      return transaction;
     } catch (error) {
-
+      console.error("Error in donate function:", error);
+      setIsLoading(false);
+      alert("An error occurred while processing your donation.");
     }
   }
-  
-  
+
+
 
   const publishCampaign = async (form) => {
     try {

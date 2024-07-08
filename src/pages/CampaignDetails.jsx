@@ -31,8 +31,8 @@ const CampaignDetails = () => {
   const handleDonate = async () => {
     setIsLoading(true);
 
-    await donate(state.projAddress, amount); 
-
+    const res = await donate(state.projAddress, amount); 
+    console.log("resultat after back", res);
     navigate('/')
     setIsLoading(false);
   }

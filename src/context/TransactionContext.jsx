@@ -51,7 +51,7 @@ export const TransactionProvider = ({ children }) => {
         }));
     };
 
-    const connectWallet = async () => {
+    const checkIfWalletIsConnected = async () => {
         try {
             if (!ethereum) {
                 return alert("Please install Metamask");
@@ -60,7 +60,7 @@ export const TransactionProvider = ({ children }) => {
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
             } else {
-                console.log("No account found");
+                connectWallet();
             }
             console.log(accounts);
         } catch (error) {
@@ -69,26 +69,54 @@ export const TransactionProvider = ({ children }) => {
         }
     };
 
-    // const connectWallet = async () => {
-    //     try {
-    //         if (!ethereum) {
-    //             return alert("Please install Metamask");
-    //         }
-    //         const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-    //         setCurrentAccount(accounts[0]);
-    //         return true
-    //     } catch (error) {
-    //         console.log(error);
-    //         // throw new Error("No ethereum object.");
-    //         return false
-    //     }
-    // };
+
+    const donate = async (projAddress, amount) => {
+        try {
+          if (!ethereum) {
+            return alert("Please install Metamask");
+          }
+          await checkIfWalletIsConnected();
+          const { crowdfundingContract } = await getEtherumContract();
+          const parsedAmount = ethers.parseEther(amount);
+          console.log(parsedAmount);
+      
+          const transaction = await crowdfundingContract.backProject(projAddress, {
+            value: parsedAmount
+          });
+          
+          console.log(`Loading - ${transaction.hash}`);
+          await transaction.wait();
+          setIsLoading(false);
+          console.log("success", transaction);
+          return transaction;
+        } catch (error) {
+          console.error("Error in donate function:", error);
+          setIsLoading(false);
+          alert("An error occurred while processing your donation.");
+        }
+      }
+
+    const connectWallet = async () => {
+        try {
+            if (!ethereum) {
+                return alert("Please install Metamask");
+            }
+            const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+            setCurrentAccount(accounts[0]);
+            return true
+        } catch (error) {
+            console.log(error);
+            // throw new Error("No ethereum object.");
+            return false
+        }
+    };
 
     const getAllProjects = async () => {
         try {
             if (!ethereum) {
                 return alert("Please install Metamask");
             }
+            checkIfWalletIsConnected();
             setIsLoading(true);
             const contract = await getEtherumContract();
             console.log("ManagerContract", contract);
@@ -109,6 +137,7 @@ export const TransactionProvider = ({ children }) => {
             if (!ethereum) {
                 return alert("Please install Metamask");
             }
+            checkIfWalletIsConnected();
             setIsLoading(true);
             const projectContract = await getProjectContract(projAddress);
             console.log("projectContract", projectContract);
