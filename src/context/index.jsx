@@ -148,6 +148,59 @@ export const StateContextProvider = ({ children }) => {
       console.log(error);
       throw new Error('No ethereum object.');
     }
+  };  
+  
+  
+  const getAllBackers = async (projAddress) => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      setIsLoading(true);
+      const projectContract = await getProjectContract(projAddress);
+      const backerAddresses = await projectContract.getAllBackers();
+      console.log('Backers addresses:', backerAddresses);
+
+      const backerDetails = await Promise.all(
+        backerAddresses.map(async (address) => {
+          const details = await getBackerDetails(projAddress, address);
+          return {
+            address,
+            ...details,
+          };
+        })
+      );
+
+      // setProjects(projectDetails);
+      setIsLoading(false);
+      console.log('Backers:', backerDetails);
+      return backerDetails;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      throw new Error('No ethereum object.');
+    }
+  };
+
+  const getBackerDetails = async (projAddress, backerAddress) => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      const projectContract = await getProjectContract(projAddress);
+      const tx = await projectContract.getBacker(backerAddress);
+      const backerDetails = {
+        contribution: parseInt(tx[0]),
+        timestamp: parseInt(tx[1]),
+        refunded: tx[2]
+      };
+      console.log('Backer Detail Informations:', backerDetails);
+
+      return backerDetails;
+    } catch (error) {
+      console.log(error);
+      throw new Error('No ethereum object.');
+    }
   };
 
   const getAdminOwner = async (projAddress) => {
@@ -284,7 +337,8 @@ export const StateContextProvider = ({ children }) => {
         getCampaigns,
         getUserCampaigns,
         donate,
-        getDonations
+        getDonations,
+        getAllBackers
       }}
     >
       {children}
