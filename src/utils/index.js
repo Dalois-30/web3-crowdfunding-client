@@ -10,13 +10,13 @@ export const daysLeft = (deadline) => {
   const days = Math.floor(hours / 24);
 
   if (days > 0) {
-    return `${days} day${days > 1 ? 's' : ''} left`;
+    return `${days} Day${days > 1 ? 's' : ''} left`;
   } else if (hours > 0) {
-    return `${hours % 24} hour${hours % 24 > 1 ? 's' : ''} left`;
+    return `${hours % 24} Hour${hours % 24 > 1 ? 's' : ''} left`;
   } else if (minutes > 0) {
-    return `${minutes % 60} minute${minutes % 60 > 1 ? 's' : ''} left`;
+    return `${minutes % 60} Minute${minutes % 60 > 1 ? 's' : ''} left`;
   } else {
-    return `${seconds % 60} second${seconds % 60 > 1 ? 's' : ''} left`;
+    return `${seconds % 60} Second${seconds % 60 > 1 ? 's' : ''} left`;
   }
 };
 

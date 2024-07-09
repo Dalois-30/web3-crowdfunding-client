@@ -85,6 +85,36 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
+  const createCampaign = async (form) => {
+    try {
+      if (!ethereum) {
+        return alert('Please install Metamask');
+      }
+      setIsLoading(true);
+      // Get the Manager project instance
+      const { crowdfundingContract } = await getEtherumContract();
+      const dateTimestamp = new Date(form.deadline).getTime() / 1000;
+      // start a new project
+      const newProject = await crowdfundingContract.createProject(
+        form.title,
+        form.description,
+        form.image,
+        form.target,
+        dateTimestamp, // deadline,
+      );
+      console.log(`Loading - ${newProject.hash}`);
+      await newProject.wait();
+      setIsLoading(false);
+      console.log('newProject:', newProject);
+      return newProject;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      throw new Error('No ethereum object.');
+    }
+  };
+  
+  
   const getAllProjects = async () => {
     try {
       if (!ethereum) {
@@ -246,83 +276,6 @@ export const StateContextProvider = ({ children }) => {
     }
   }
 
-
-
-  const publishCampaign = async (form) => {
-    try {
-      const data = await createCampaign([
-        address, // owner
-        form.title, // title
-        form.description, // description
-        form.target,
-        new Date(form.deadline).getTime(), // deadline,
-        form.image
-      ])
-
-      console.log("contract call success", data)
-    } catch (error) {
-      console.log("contract call failure", error)
-    }
-  }
-
-  const getCampaigns = async () => {
-    try {
-      if (!ethereum) {
-        return alert("Please install Metamask");
-      }
-      const transactionContract = await contract();
-
-      const campaigns = await transactionContract.getCampaigns();
-      const parsedCampaings = campaigns.map((campaign, i) => ({
-        owner: campaign.owner,
-        title: campaign.title,
-        description: campaign.description,
-        target: ethers.utils.formatEther(campaign.target.toString()),
-        deadline: campaign.deadline.toNumber(),
-        amountCollected: ethers.utils.formatEther(campaign.amountCollected.toString()),
-        image: campaign.image,
-        pId: i
-      }));
-
-      return parsedCampaings;
-    } catch (error) {
-
-    }
-  }
-
-  const getUserCampaigns = async () => {
-    try {
-      if (!ethereum) {
-        return alert("Please install Metamask");
-      }
-      const allCampaigns = await getCampaigns();
-
-      const filteredCampaigns = allCampaigns.filter((campaign) => campaign.owner === address);
-
-      return filteredCampaigns;
-    } catch (error) {
-
-    }
-  }
-
-
-  const getDonations = async (pId) => {
-    const donations = await contract.call('getDonators', pId);
-    const numberOfDonations = donations[0].length;
-
-    const parsedDonations = [];
-
-    for (let i = 0; i < numberOfDonations; i++) {
-      parsedDonations.push({
-        donator: donations[0][i],
-        donation: ethers.utils.formatEther(donations[1][i].toString())
-      })
-    }
-
-    return parsedDonations;
-  }
-
-
   return (
     <StateContext.Provider
       value={{
@@ -333,12 +286,10 @@ export const StateContextProvider = ({ children }) => {
         connect,
         getAllProjects,
         getProjectDetails,
-        createCampaign: publishCampaign,
-        getCampaigns,
-        getUserCampaigns,
+        createCampaign,
         donate,
-        getDonations,
-        getAllBackers
+        getAllBackers,
+        createCampaign
       }}
     >
       {children}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { ethers } from 'ethers';
 
 import { useStateContext } from '../context';
 import { money } from '../assets';
@@ -18,7 +17,7 @@ const CreateCampaign = () => {
     target: '', 
     deadline: '',
     image: ''
-  });
+  }); 
 
   const handleFormFieldChange = (fieldName, e) => {
     setForm({ ...form, [fieldName]: e.target.value })
@@ -30,7 +29,7 @@ const CreateCampaign = () => {
     checkIfImage(form.image, async (exists) => {
       if(exists) {
         setIsLoading(true)
-        await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18)})
+        await createCampaign(form)
         setIsLoading(false);
         navigate('/');
       } else {
@@ -50,7 +49,7 @@ const CreateCampaign = () => {
       <form onSubmit={handleSubmit} className="w-full mt-[65px] flex flex-col gap-[30px]">
         <div className="flex flex-wrap gap-[40px]">
           <FormField 
-            labelName="Your Name *"
+            labelName="Your Name "
             placeholder="John Doe"
             inputType="text"
             value={form.name}
@@ -81,7 +80,7 @@ const CreateCampaign = () => {
         <div className="flex flex-wrap gap-[40px]">
           <FormField 
             labelName="Goal *"
-            placeholder="ETH 0.50"
+            placeholder="USD 100"
             inputType="text"
             value={form.target}
             handleChange={(e) => handleFormFieldChange('target', e)}
